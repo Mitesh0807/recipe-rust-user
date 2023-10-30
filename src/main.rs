@@ -36,14 +36,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     client_options.min_pool_size = database_config.min_pool_size;
     client_options.compressors = database_config.compressors;
     let client = Client::with_options(client_options).unwrap();
-    println!(
-        "connected to database {}",
-        client.database("Recipes").name()
-    );
-    // let db = client.database("recipes");
-    // for collection_name in db.list_collection_names(None).await? {
-    //     println!("{}", collection_name);
-    // }
     let app = Router::new()
         .route("/", get(health_check))
         .with_state(client);
@@ -64,8 +56,8 @@ pub struct MyDocument {
     pub name: String,
     pub slug: String,
     pub subName: String,
-    pub createdAt: String,
-    pub updatedAt: String,
+    // pub createdAt: String,
+    // pub updatedAt: String,
     pub __v: i32,
 }
 
@@ -92,7 +84,6 @@ pub async fn health_check(
         .expect("Could not find categories");
     let mut categories: Vec<MyDocument> = Vec::new();
     while let Some(category) = category_cursor.next().await {
-        println!("{:#?}", category);
         match category {
             Ok(category) => {
                 categories.push(category);
@@ -102,7 +93,6 @@ pub async fn health_check(
             }
         }
     }
-    println!("{:#?}", categories);
     let response = Response {
         success: true,
         data: Some(categories),
